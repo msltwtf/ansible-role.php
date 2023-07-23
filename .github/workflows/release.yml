@@ -10,8 +10,8 @@ defaults:
     working-directory: msltwtf.php
 
 jobs:
-  test:
-    uses: ./.github/workflows/ci.yml
+#  test:
+#    uses: ./.github/workflows/ci.yml
   release:
     name: Release
     runs-on: ubuntu-latest

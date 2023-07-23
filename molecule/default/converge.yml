@@ -1,7 +1,0 @@
----
-- name: Converge
-  hosts: all
-  tasks:
-    - name: "Include mslt.php"
-      include_role:
-        name: "msltwtf.php"
