@@ -1,6 +1,6 @@
 galaxy_info:
   author: msltwtf
-  description: replace_desc
+  description: Install a specific php version and extentions.
   role_name: php
 
   issue_tracker_url: https://github.com/msltwtf/php
