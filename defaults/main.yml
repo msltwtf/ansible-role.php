@@ -1,2 +1,6 @@
 ---
-# defaults file for php
+
+php_packages:
+  - name: curl
+  - name: mysql
+  - name: xml

@@ -1,2 +1,90 @@
 ---
-# tasks file for php
+
+- ansible.builtin.fail:  # noqa name[missing]
+    msg: "PHP Version is not set! Please read the README!"
+  when: php_version is undefined
+
+- name: Ensure required tools are present
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+    update_cache: True
+    cache_valid_time: 3600
+  become: True
+  tags:
+    - php
+    - php-prereq
+    - dependencies
+
+- name: Import sury repo key
+  ansible.builtin.apt_key:
+    url: https://packages.sury.org/php/apt.gpg
+    state: present
+  become: True
+  tags:
+    - php
+    - php-key
+    - repo-key
+
+- name: Add sury's php repo
+  ansible.builtin.apt_repository:
+    repo: deb https://packages.sury.org/php {{ ansible_distribution_release }} main
+    filename: sury-php
+    state: present
+  tags:
+    - php
+    - php-repo
+
+- name: Pin sury repo
+  ansible.builtin.copy:
+    src: pin-sury
+    dest: /etc/apt/preferences.d/prefer-php-from-sury
+    owner: root
+    group: root
+    mode: 0644
+  become: True
+  tags:
+    - php
+    - php-repo
+    - php-repo-pin
+    - repo-pin
+    - apt-pin
+
+- name: Install php packages
+  ansible.builtin.apt:
+    name: "php{{ php_version }}-{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+    update_cache: True
+    cache_valid_time: 3600
+  become: True
+  loop: "{{ php_packages }}"
+  tags:
+    - php
+    - php-install
+    - apt
+
+- name: Configure php
+  when: php_settings is defined
+  tags: ['php', 'php-config']
+  block:
+    - name: Find all php ini files
+      ansible.builtin.find:
+        path: /etc/php/
+        patterns: "php.ini"
+        recurse: True
+        file_type: file
+      register: php_ini
+
+    - name: Set config values  # noqa risky-file-permissions
+      community.general.ini_file:
+        path: "{{ item[0].path }}"
+        section: PHP
+        option: "{{ item[1] }}"
+        value: "{{ item[2] }}"
+      notify: Restart apache
+      become: True
+      with_nested:
+        - "{{ php_ini.files }}"
+        - "{{ php_settings | dictsort }}"

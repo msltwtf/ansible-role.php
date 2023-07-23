@@ -1,2 +1,7 @@
 ---
-# handlers file for php
+
+- name: Restart apache
+  ansible.builtin.systemd:
+    name: apache2
+    state: restarted
+  become: True
