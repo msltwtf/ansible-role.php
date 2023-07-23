@@ -1,5 +1,5 @@
 # Ansible Role: php
-
+[![CI](https://github.com/msltwtf/ansible-role.php/actions/workflows/ci.yml/badge.svg)](https://github.com/msltwtf/ansible-role.php/actions/workflows/ci.yml)  
 Install php and php-modules in a specific version from the sury.org repo.
 
 [Changelog](CHANGELOG.md)
